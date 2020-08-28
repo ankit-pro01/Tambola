@@ -7,10 +7,10 @@ import { Provider } from "react-redux";
 
 import {createStore, applyMiddleware } from "redux";
 
-import IncrementReducer from "./store/reducers/increment"
 import thunk from 'redux-thunk';
+import rootReducer from './store/reducers';
 
-const store = createStore(IncrementReducer, applyMiddleware(thunk))
+const store = createStore(rootReducer, applyMiddleware(thunk))
 
 
 ReactDOM.render(

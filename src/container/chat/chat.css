@@ -1,0 +1,16 @@
+.chit{
+    margin: "5px";
+
+}
+
+.chit:active{
+    background-color: red;
+}
+
+.chit:active{
+    background:olive;
+}
+
+.chit:focus{
+    background:olive;
+}

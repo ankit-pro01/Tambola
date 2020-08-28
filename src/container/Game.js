@@ -34,7 +34,8 @@ class Game extends Component {
 const mapStateToProps = (state) => {
     console.log(state)
     return {
-        count_state : state.count
+        count_state : state.Increment.count,
+        name : state.user.name
     }
 }
 
