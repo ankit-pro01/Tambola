@@ -15,7 +15,8 @@ class Chat extends Component {
     state = {
         message: "",
         messages: [],
-        chit:[]
+        chit:[],
+        hostNumber : [],
     }
 
     OnTextChange = (e) => {
@@ -28,13 +29,21 @@ class Chat extends Component {
         // })
         socket.on("message", (data) => {
             console.log(data)
+            let host_msg = ""
             let msg  = data.username + " : " + data.msg
             this.setState({...this.state, messages : [...this.state.messages, msg]})
+            
+
         })
 
         socket.on('chits', (data) => {
             console.log(data)
             this.setState({...this.state, chit : data.chit})
+        })
+
+        socket.on('start', (data) => {
+            console.log("start", data.msg)
+            this.setState({...this.state, hostNumber : [...this.state.hostNumber, data.msg]})
         })
     }
 
@@ -63,31 +72,47 @@ class Chat extends Component {
     }
 
     render(){
+        console.log(" Number is : ", this.state.hostNumber)
         return(
+            <div className = "game">
+                <div className = "tambola">
+                <div style = {{margin: "50px"}}>  
+                    <button className = "number-generator">{this.state.hostNumber[this.state.hostNumber.length - 1]}</button>
+                </div>
+                    
+                <p><button onClick = {this.getChit}>chit</button></p>
+                <p><button onClick = {this.onStart}>Start</button></p>
+                <div className = "chit">
+                    <div>
+                    {this.state.chit.map(num => {
+                        return(
+                        <button className = "chit_numbers">{num}</button>
+                        )
+                    })}
+                    </div>
+                       
+                </div>
+            </div>
             <div className = "chat">
-                <p>Hi {this.props.name}</p>
-
+                <p style= {{textAlign: "center"}}>
+                    <h2>CHAT ROOM</h2>
+                    <h4>Hi {this.props.name}</h4>
+                </p>
+                
                 <div>
                     {this.state.messages.map(msg => {
                         return(
-                        <p>{msg}</p>
+                        <p className = "chat-container">{msg}</p>
                         )
                     })}
                 </div>
-                <p><input onChange = {(e) => this.OnTextChange(e)}></input><button onClick = {this.onSendMessage}>Send</button></p>
-                <p><button onClick = {this.getChit}>chit</button></p>
-                <p><button onClick = {this.onStart}>Start</button></p>
-                <div>
-                    {this.state.chit.map(num => {
-                        return(
-                        <button  className = "chit">{num}</button>
-                        )
-                    })}
-                </div>
+
+                <p className = "Send-Message"><input onChange = {(e) => this.OnTextChange(e)}></input>
+                <button onClick = {this.onSendMessage}>Send</button></p>
+      
             </div>
 
-
-
+        </div>
         )
     }
 }

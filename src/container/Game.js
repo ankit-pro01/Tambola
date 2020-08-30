@@ -16,17 +16,9 @@ class Game extends Component {
 
     render(){
         return(
-            <div className = "game">
-                <div className = "tambola">
-                    <div>
-        <button onClick = {() => this.increment()}>Increment{this.props.count_state}</button>
-                    </div>
-                </div>
-                <div className = "chat">
-                    <Chat />
-                </div>
+            <div>
+                <Chat />
             </div>
-
         )
     }
 }
