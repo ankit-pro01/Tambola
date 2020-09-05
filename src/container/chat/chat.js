@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import io from "socket.io-client";
 
 import {connect} from "react-redux"
-import "./chat.css"
+import "./chat.css";
+import Picker from 'emoji-picker-react';
+
 
 
 let endPoint = "http://localhost:5000";
-let socket = io.connect(`${endPoint}`);
+export const socket = io.connect(`${endPoint}`);
 
 
 let global_var
@@ -17,6 +19,7 @@ class Chat extends Component {
         messages: [],
         chit:[],
         hostNumber : [],
+        chosenEmoji : ""
     }
 
     OnTextChange = (e) => {
@@ -27,9 +30,13 @@ class Chat extends Component {
         // socket.on('connect', () => {
         //     socket.send("server connected")
         // })
+
+        socket.on("join", data => {
+            let msg  = data.msg
+            this.setState({...this.state, messages : [...this.state.messages, msg]})
+        })
         socket.on("message", (data) => {
             console.log(data)
-            let host_msg = ""
             let msg  = data.username + " : " + data.msg
             this.setState({...this.state, messages : [...this.state.messages, msg]})
             
@@ -49,7 +56,7 @@ class Chat extends Component {
 
     onSendMessage = () => {
         console.log(this.props.room)
-        socket.emit('join', {'name' : this.props.name, 'room' : this.props.room})
+//        socket.emit('join', {'name' : this.props.name, 'room' : this.props.room})
         socket.send({ 'msg' : this.state.message, 'name' :  this.props.name, 'room' : this.props.room})
     }
 
@@ -71,6 +78,25 @@ class Chat extends Component {
         socket.emit('chits')
     }
 
+    changeColor = (e) => {
+        console.log(e.target.id)
+        let id = e.target.id
+        console.log(document.getElementById(id).style.backgroundColor == 'white')
+        if (document.getElementById(id).style.backgroundColor == 'white'){
+            document.getElementById(id).style.textDecoration = "line-through"
+            document.getElementById(id).style.backgroundColor = "Red"   
+        }
+        else{
+            document.getElementById(id).style.backgroundColor = 'white'
+            document.getElementById(id).style.textDecoration = "none"
+
+        }
+    }
+
+    onEmojiClick = (event, emojiObject) => {
+        this.setState({...this.state, chosenEmoji : emojiObject})
+      };
+
     render(){
         console.log(" Number is : ", this.state.hostNumber)
         return(
@@ -85,8 +111,9 @@ class Chat extends Component {
                 <div className = "chit">
                     <div>
                     {this.state.chit.map(num => {
+                        console.log(this.state.chit.indexOf(num))
                         return(
-                        <button className = "chit_numbers">{num}</button>
+                        <button id = {"id" + this.state.chit.indexOf(num)} className = "chit_numbers" onClick = {(e) => this.changeColor(e)}>{num}</button>
                         )
                     })}
                     </div>
@@ -109,6 +136,16 @@ class Chat extends Component {
 
                 <p className = "Send-Message"><input onChange = {(e) => this.OnTextChange(e)}></input>
                 <button onClick = {this.onSendMessage}>Send</button></p>
+                <div>
+                <div>
+                    {this.state.chosenEmoji ? (
+                    <span>You chose: {this.state.chosenEmoji.emoji}</span>
+                    ) : (
+                        <span>No emoji Chosen</span>
+                    )}
+                        <Picker onEmojiClick={this.onEmojiClick} />
+                    </div>
+                 </div>
       
             </div>
 

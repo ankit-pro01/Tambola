@@ -56,6 +56,10 @@
     font-size: 1.5rem;
 }
 
+
+
+
+
 .number-generator{
     font-size: 2rem;
     color: #ff1493;
@@ -66,6 +70,7 @@
     /* transition: transform 5s ease-in; */
     transform: 3d;
 }
+
 
 
 .Send-Message button{
