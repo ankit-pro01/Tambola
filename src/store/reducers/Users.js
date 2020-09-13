@@ -13,6 +13,7 @@ const UsersReducer = (state = InitialState, action) => {
             }
         case "JOIN_ROOM":
             console.log("inside join Room")
+            
             return{
                 ...state,
                 room : action.room

@@ -12,14 +12,15 @@ export const socket = io.connect(`${endPoint}`);
 
 
 let global_var
-
+    
 class Chat extends Component {
     state = {
         message: "",
         messages: [],
         chit:[],
         hostNumber : [],
-        chosenEmoji : ""
+        chosenEmoji : "",
+        king : false
     }
 
     OnTextChange = (e) => {
@@ -27,13 +28,19 @@ class Chat extends Component {
     }
 
     componentDidMount(){
-        // socket.on('connect', () => {
-        //     socket.send("server connected")
-        // })
+
+        socket.on("king", data => {
+            let king = data.king
+
+            console.log("king: ", king)
+            this.setState({...this.state, king : king})
+
+        })
 
         socket.on("join", data => {
             let msg  = data.msg
             this.setState({...this.state, messages : [...this.state.messages, msg]})
+
         })
         socket.on("message", (data) => {
             console.log(data)
@@ -94,20 +101,41 @@ class Chat extends Component {
     }
 
     onEmojiClick = (event, emojiObject) => {
-        this.setState({...this.state, chosenEmoji : emojiObject})
+        this.setState({...this.state, chosenEmoji : emojiObject, message : this.state.message + emojiObject.emoji})
+
+        let value = document.getElementById('inputText').value
+        document.getElementById('inputText').value = this.state.message
+        
       };
+
+
+    openEmoji = () => {
+        if (document.getElementById('emoji').style.display == 'none'){
+            document.getElementById('emoji').style.display ='Block'
+        }
+        else{
+            document.getElementById('emoji').style.display ='none'
+
+        }
+
+    }
 
     render(){
         console.log(" Number is : ", this.state.hostNumber)
         return(
             <div className = "game">
                 <div className = "tambola">
+                    <div className = "modal">
+                        PLAY AGAIN
+                    </div>
                 <div style = {{margin: "50px"}}>  
                     <button className = "number-generator">{this.state.hostNumber[this.state.hostNumber.length - 1]}</button>
                 </div>
+
+                <div><button onClick = {this.stop}>CLAIM</button></div>
                     
                 <p><button onClick = {this.getChit}>chit</button></p>
-                <p><button onClick = {this.onStart}>Start</button></p>
+                {this.state.king ? <p><button onClick = {this.onStart}>Start</button></p> : ""}
                 <div className = "chit">
                     <div>
                     {this.state.chit.map(num => {
@@ -134,16 +162,12 @@ class Chat extends Component {
                     })}
                 </div>
 
-                <p className = "Send-Message"><input onChange = {(e) => this.OnTextChange(e)}></input>
+                <p className = "Send-Message"><input id = "inputText" onChange = {(e) => this.OnTextChange(e)}></input>
+                <span onClick = {this.openEmoji}>emoji</span>
                 <button onClick = {this.onSendMessage}>Send</button></p>
                 <div>
-                <div>
-                    {this.state.chosenEmoji ? (
-                    <span>You chose: {this.state.chosenEmoji.emoji}</span>
-                    ) : (
-                        <span>No emoji Chosen</span>
-                    )}
-                        <Picker onEmojiClick={this.onEmojiClick} />
+                <div id = "emoji" style = {{display: "none"}}>
+                   <Picker onEmojiClick={this.onEmojiClick} />
                     </div>
                  </div>
       

@@ -7,6 +7,9 @@ import {Users as UserAction, joinRoom } from "../../store/actions/Users";
 
 import {socket} from "../chat/chat";
 
+
+const poster = require( "../../assets/some.svg")
+
 class Home extends Component {
 
     state = {
@@ -17,19 +20,37 @@ class Home extends Component {
         Rooms : [],
         join : false,
         create: false,
+        error : "",
     }
 
+    componentDidMount(){
+        console.log("inside componrent did mount");
+        socket.on('join', (data) => {
+            let error = data['error']
+            if (error == ""){
+                console.log("joining")
+                this.props.history.push('/game')
+            }
+            else{
+                this.setState({...this.state, error : error})
+                console.log("error")
+            }
+        })
+        
+    }
 
-/*     addName = () => {
-        console.log("name: ", this.state.name)
-        this.props.UserAdd(this.state.name)
-    } */
-
-    RedirectPage = () => {
-        this.props.UserAdd(this.state.name)
+    RedirectPage =  () => {
+        this.props.UserAdd(this.state.name) 
         this.props.joinRoom(this.state.room)
-        socket.emit('join', {'name' : this.state.name, 'room' : this.state.room})
-        this.props.history.push('/game')
+        if(this.state.create){
+            socket.emit('newRoom', {'name' : this.state.name, 'room' : this.state.room})
+
+        }
+        else{
+            socket.emit('join', {'name' : this.state.name, 'room' : this.state.room})
+
+        }
+       
     }
 
     onNameChange = (e) => {
@@ -41,12 +62,13 @@ class Home extends Component {
     }
 
     onCreateRoomChange = (e) =>{
-        this.setState({...this.state, new_room : e.target.value})
+        this.setState({...this.state, room : e.target.value})
     }
 
     onCreateRoom = () =>{
         this.setState({...this.state, create : true, join : false})
         console.log("room is created")
+
     }
 
     onJoinRoom = () => {
@@ -54,13 +76,14 @@ class Home extends Component {
         console.log("join room")
     }
 
-    /* joinRoom = () => {
-        
-    } */
 
     render(){
         return(
-            <div className = "home">
+            <div className = "homeContainer">
+                {/* <div className = "poster">
+                    <img src = {poster}></img>
+                </div> */}
+                <div className = "home">
                 <h1>Welcome to Tambola APP</h1>
                 <div>
                     <p>NAME : <input onChange = {(e) => this.onNameChange(e)}></input></p>
@@ -76,8 +99,13 @@ class Home extends Component {
                     <button onClick = {this.onCreateRoom}>CREATE ROOM</button>
 
                     <p><button onClick = {this.RedirectPage}>play</button></p>
+
+                <p>{this.state.error}</p>
                 </div>
             </div>
+
+            </div>
+            
         )
     }
 }
