@@ -1,4 +1,4 @@
- .home{
+ /* .home{
       background-color: #ff1493;
       color: white;
       text-align: center;
@@ -12,7 +12,15 @@
       -ms-transform: translateX(-50%) translateY(-50%);
       -webkit-transform: translate(-50%,-50%);
       transform: translate(-50%,-50%);
-  }
+  } */
 
-  .homeContainer{
+  .home{
+    background-color: #ff1493;
+    color: white;
+          padding: 15px;
+
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+
   }

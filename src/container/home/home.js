@@ -7,8 +7,9 @@ import {Users as UserAction, joinRoom } from "../../store/actions/Users";
 
 import {socket} from "../chat/chat";
 
+import Writing from "../animated/writing"
 
-const poster = require( "../../assets/some.svg")
+const poster = require( "../../assets/poster.png")
 
 class Home extends Component {
 
@@ -39,14 +40,30 @@ class Home extends Component {
         
     }
 
+    makeid = (l) =>{
+            var text = "";
+            var char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for(var i=0; i < l; i++ )
+            {  
+            text += char_list[(Math.floor(Math.random() * char_list.length))];
+            }
+            return text;
+    }
+
     RedirectPage =  () => {
-        this.props.UserAdd(this.state.name) 
-        this.props.joinRoom(this.state.room)
+        
+
         if(this.state.create){
-            socket.emit('newRoom', {'name' : this.state.name, 'room' : this.state.room})
+            let uid = this.state.room + this.makeid(10)
+            console.log("uid : " ,uid)
+            this.props.UserAdd(this.state.name) 
+            this.props.joinRoom(uid)
+            socket.emit('newRoom', {'name' : this.state.name, 'room' : uid})
 
         }
         else{
+            this.props.UserAdd(this.state.name) 
+            this.props.joinRoom(this.state.room)
             socket.emit('join', {'name' : this.state.name, 'room' : this.state.room})
 
         }
@@ -88,11 +105,11 @@ class Home extends Component {
                 <div>
                     <p>NAME : <input onChange = {(e) => this.onNameChange(e)}></input></p>
                     {
-                       this.state.join ?<p> enter room name<input onChange = {(e) => this.onRoomChange(e)} 
+                       this.state.join ?<p>ENTER ROOM NAME : <input onChange = {(e) => this.onRoomChange(e)} 
                        /></p> : ""
                     }
                     {
-                        this.state.create ?<p> create room <input onChange = {(e) => this.onCreateRoomChange(e)} /></p>  : ""
+                        this.state.create ?<p>CREATE ROOM : <input onChange = {(e) => this.onCreateRoomChange(e)} /></p>  : ""
                     }
                  
                      <button onClick = {this.onJoinRoom}>JOIN ROOM</button>
@@ -101,8 +118,10 @@ class Home extends Component {
                     <p><button onClick = {this.RedirectPage}>play</button></p>
 
                 <p>{this.state.error}</p>
+                <p><Writing /></p>
                 </div>
             </div>
+            
 
             </div>
             

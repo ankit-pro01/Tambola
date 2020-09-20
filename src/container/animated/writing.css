@@ -1,0 +1,173 @@
+/*
+* Animation styling
+*/
+#road1 {
+  animation: pageExit 1s linear forwards infinite;
+}
+
+#road2 {
+  animation: pageEnter 1s linear forwards infinite;
+}
+
+#terrain1 {
+  animation: pageEnter 2s linear forwards infinite;
+}
+
+#terrain2 {
+  animation: pageExit 2s linear forwards infinite;
+}
+
+#mountains1 {
+  animation: pageEnter 6s linear forwards infinite;
+}
+
+#mountains2 {
+  animation: pageExit 6s linear forwards infinite;
+}
+
+#clouds1 {
+  animation: pageEnter 12s linear forwards infinite;
+}
+
+#clouds2 {
+  animation: pageExit 12s linear forwards infinite;
+}
+
+#van-body {
+  animation: bounce 0.3s forwards infinite;
+}
+
+/*
+* Keyframes
+*/
+@keyframes pageExit {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(5px);
+  }
+}
+
+/* 
+* Basic page styling
+*/
+
+
+svg {
+  position: relative;
+}
+
+/*
+* SVG styles
+*/
+.st0 {
+  fill: #ebd9ff;
+}
+.st1 {
+  fill: none;
+  stroke: #523160;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+.st2 {
+  display: none;
+}
+.st3 {
+  display: inline;
+  fill: #fdc858;
+}
+.st4 {
+  fill: none;
+  stroke: #d4c0e2;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+.st5 {
+  fill: #fdc858;
+}
+.st6 {
+  fill: #ffffff;
+  stroke: #d4c0e2;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+.st7 {
+  fill: none;
+  stroke: #d4c0e2;
+  stroke-width: 7.4637;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}
+.st8 {
+  opacity: 0.56;
+  fill: #fdc858;
+  enable-background: new;
+}
+.st9 {
+  fill: #5c3f6b;
+}
+.st10 {
+  fill: #8e63ad;
+}
+.st11 {
+  opacity: 0.36;
+}
+.st12 {
+  opacity: 0.36;
+  fill: #8e63ad;
+  enable-background: new;
+}
+.st13 {
+  opacity: 0.25;
+}
+.st14 {
+  fill: #ffffff;
+}
+.st15 {
+  fill: #d8d8d8;
+}
+
+.st16 {
+  opacity: 0.48;
+  fill: none;
+  stroke: #523160;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+  enable-background: new;
+}
+.st17 {
+  fill: none;
+  stroke: #523160;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+}

@@ -4,6 +4,12 @@ import io from "socket.io-client";
 import {connect} from "react-redux"
 import "./chat.css";
 import Picker from 'emoji-picker-react';
+import Ghost from '../animated/ghost'
+
+import Writing from "../animated/writing"
+
+let img = require("../../assets/chat.svg")
+let new_img = require("../../assets/celebrate.png")
 
 
 
@@ -20,7 +26,12 @@ class Chat extends Component {
         chit:[],
         hostNumber : [],
         chosenEmoji : "",
-        king : false
+        king : false,
+        showModal : false,
+        showClaim : false,
+        claimer : "",
+        room_id : "",
+        start :  false
     }
 
     OnTextChange = (e) => {
@@ -31,9 +42,9 @@ class Chat extends Component {
 
         socket.on("king", data => {
             let king = data.king
-
+            let room_id = data.room_id
             console.log("king: ", king)
-            this.setState({...this.state, king : king})
+            this.setState({...this.state, king : king, room_id : room_id})
 
         })
 
@@ -57,7 +68,26 @@ class Chat extends Component {
 
         socket.on('start', (data) => {
             console.log("start", data.msg)
-            this.setState({...this.state, hostNumber : [...this.state.hostNumber, data.msg]})
+            this.setState({...this.state, hostNumber : [...this.state.hostNumber, data.msg], start : true})
+        })
+
+        socket.on('claim', (data) => {
+            console.log("claim ->", data.msg)
+            if(data.msg === "YES"){
+                this.setState({...this.state, showClaim : false, claimer: data.claimer})
+                this.openModal()
+
+            }
+            else{
+                this.setState({...this.state, showClaim : true, claimer: data.claimer})
+            }
+        })
+
+        socket.on('playAgain', (data) => {
+            console.log(data.msg)
+            clearInterval(global_var)
+            this.setState({...this.state, hostNumber : [], start: false})
+            socket.emit('chits')
         })
     }
 
@@ -69,11 +99,22 @@ class Chat extends Component {
 
     stop = () => {
         console.log("inside stop")
+        console.log(this.state.chit)
         clearInterval(global_var)
+        console.log("room is :",this.props.room)
+        socket.emit('claim', {'room' : this.props.room, 'number_list' : this.state.chit, 'claimer': this.props.name})
+
+
+
+    }
+
+    openModal = () =>{
+        this.setState({...this.state, showModal : !this.state.showModal})
+        console.log(this.state.showModal)
     }
 
     start = () => {
-        console.log("emited")        
+        console.log("emited")
         socket.emit('start', {'room' : this.props.room})
     }
 
@@ -83,6 +124,21 @@ class Chat extends Component {
 
     getChit = () => {
         socket.emit('chits')
+        document.getElementById('chit_button').disabled = 'true'
+    }
+
+    playAgain = () => {
+        this.setState({...this.state, hostNumber: [], })
+        socket.emit('playAgain', {'room': this.props.room})
+        this.openModal()
+        let z = document.getElementsByClassName("chit_numbers")
+
+        for(let i = 0; i < z.length;i++){
+            z[i].style.backgroundColor = 'white'
+            z[i].style.textDecoration = 'none'
+        }
+        
+
     }
 
     changeColor = (e) => {
@@ -125,16 +181,39 @@ class Chat extends Component {
         return(
             <div className = "game">
                 <div className = "tambola">
-                    <div className = "modal">
-                        PLAY AGAIN
+                
+                    {
+                    this.state.showModal ?  
+                    <div id="myModal" className="modal">
+                        <div className="modal-content">
+                            <span onClick = {this.openModal}className="close">&times;</span>
+                            <div>        
+                                <div className = "Ghost">
+                                    <Ghost />   
+                                </div> 
+                                <div>
+                                <h1>CONGRATS</h1>
+                                <p>{this.state.claimer} is the winner</p>
+                                <button style = {{backgroundColor: "#523160", color : "white", padding: "5px"}} onClick = {this.playAgain}>play again</button>
+                                </div>      
+                                
+                            </div>
+                    }
                     </div>
+
+                </div> : ""
+                    }
+                       
                 <div style = {{margin: "50px"}}>  
                     <button className = "number-generator">{this.state.hostNumber[this.state.hostNumber.length - 1]}</button>
+                    {this.state.start  ? <p style = {{color : "#523160"}}>Match has been Started</p> : null}
                 </div>
+
+                {this.state.showClaim ? <p>{this.state.claimer} claims to be winner</p>: null}
 
                 <div><button onClick = {this.stop}>CLAIM</button></div>
                     
-                <p><button onClick = {this.getChit}>chit</button></p>
+                <p><button onClick = {this.getChit} id = "chit_button">chit</button></p>
                 {this.state.king ? <p><button onClick = {this.onStart}>Start</button></p> : ""}
                 <div className = "chit">
                     <div>
@@ -149,10 +228,11 @@ class Chat extends Component {
                 </div>
             </div>
             <div className = "chat">
-                <p style= {{textAlign: "center"}}>
+                <div style= {{textAlign: "center"}}>
                     <h2>CHAT ROOM</h2>
                     <h4>Hi {this.props.name}</h4>
-                </p>
+                    <p>ROOM ID : {this.state.room_id}</p>
+                </div>
                 
                 <div>
                     {this.state.messages.map(msg => {
@@ -169,6 +249,10 @@ class Chat extends Component {
                 <div id = "emoji" style = {{display: "none"}}>
                    <Picker onEmojiClick={this.onEmojiClick} />
                     </div>
+                 </div>
+
+                 <div className = "chatImage">
+                        <img src = {img}  width = "360px"/>
                  </div>
       
             </div>
